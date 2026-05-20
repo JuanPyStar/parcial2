@@ -269,6 +269,42 @@ function refreshRequestData(): void
 
 refreshRequestData();
 
+$filterSearch = $_GET['search'] ?? '';
+$filterType = $_GET['filter_type'] ?? '';
+$filterStatus = $_GET['filter_status'] ?? '';
+
+if ($currentUserRole === 'admin' && ($selectedPanel === 'admin_requests' || $selectedPanel === 'admin_reports')) {
+    $applyFilters = function($requests) use ($filterSearch, $filterType, $filterStatus, $students, $requestTypes) {
+        return array_filter($requests, function($req) use ($filterSearch, $filterType, $filterStatus, $students, $requestTypes) {
+            $student = getStudent($students, $req['estudiante_id']);
+            $studentName = trim(($student['nombre'] ?? '') . ' ' . ($student['apellido'] ?? ''));
+            
+            if ($filterType !== '' && (int)$req['tipo_solicitud_id'] !== (int)$filterType) {
+                return false;
+            }
+            if ($filterStatus !== '' && $req['estado'] !== $filterStatus) {
+                return false;
+            }
+            if ($filterSearch !== '') {
+                $searchLower = strtolower($filterSearch);
+                $idMatch = strpos(strtolower((string)$req['id']), $searchLower) !== false;
+                $nameMatch = strpos(strtolower($studentName), $searchLower) !== false;
+                if (!$idMatch && !$nameMatch) {
+                    return false;
+                }
+            }
+            return true;
+        });
+    };
+
+    if ($selectedPanel === 'admin_requests') {
+        $adminPendingRequests = $applyFilters($adminPendingRequests);
+    }
+    if ($selectedPanel === 'admin_reports') {
+        $adminRespondedRequests = $applyFilters($adminRespondedRequests);
+    }
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['edit_request_id']) && $currentUserRole === 'admin') {
     $editRequestId = intval($_GET['edit_request_id'] ?? 0);
     if ($editRequestId > 0) {
