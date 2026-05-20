@@ -73,6 +73,46 @@ $shifts = [
     4 => 'Virtual'
 ];
 
+$studentFilter = (string)($_REQUEST['student_filter'] ?? 'all');
+$adminPendingFilter = (string)($_REQUEST['admin_pending_filter'] ?? 'all');
+$adminHistoryFilter = (string)($_REQUEST['admin_history_filter'] ?? '');
+
+$studentStatusOptions = [
+    'all' => 'Todos',
+    'Pendiente' => 'Pendiente',
+    'Aprobada' => 'Aprobada',
+    'Rechazada' => 'Rechazada',
+    'Observada' => 'Observada',
+    'En espera' => 'En espera',
+    'Falta información' => 'Falta información'
+];
+
+$adminPendingStatusOptions = [
+    'all' => 'Todos',
+    'Pendiente' => 'Pendiente',
+    'En espera' => 'En espera',
+    'Falta información' => 'Falta información'
+];
+
+$adminHistoryStatusOptions = [
+    'Aprobada' => 'Aprobada',
+    'Rechazada' => 'Rechazada',
+    'Observada' => 'Observada',
+    'Falta información' => 'Falta información',
+    'En espera' => 'En espera'
+];
+
+function filterRequestsByStatus(array $requests, string $status): array
+{
+    if ($status === '' || $status === 'all') {
+        return $requests;
+    }
+
+    return array_values(array_filter($requests, function (array $request) use ($status) {
+        return isset($request['estado']) && $request['estado'] === $status;
+    }));
+}
+
 // Las solicitudes ahora se cargan desde la BD (tabla `solicitud`).
 
 function mapDbSolicitudToUi(array $row): array
@@ -198,7 +238,7 @@ $replyRequest = null;
 
 function refreshRequestData(): void
 {
-    global $currentUserRole, $currentUserId, $studentRequests, $adminPendingRequests, $adminRespondedRequests, $allRequests;
+    global $currentUserRole, $currentUserId, $studentRequests, $adminPendingRequests, $adminRespondedRequests, $allRequests, $studentFilter, $adminPendingFilter, $adminHistoryFilter;
 
     $studentRequests = [];
     $adminPendingRequests = [];
@@ -210,6 +250,7 @@ function refreshRequestData(): void
         if ($currentUserRole === 'student' && $currentUserId) {
             $rows = $solicitudModel->listarPorEstudiante((int)$currentUserId);
             $studentRequests = array_map('mapDbSolicitudToUi', $rows);
+            $studentRequests = filterRequestsByStatus($studentRequests, $studentFilter);
             $allRequests = $studentRequests;
         }
         if ($currentUserRole === 'admin') {
@@ -217,6 +258,8 @@ function refreshRequestData(): void
             $respondedRows = $solicitudModel->listarRespondidas();
             $adminPendingRequests = array_map('mapDbSolicitudToUi', $pendingRows);
             $adminRespondedRequests = array_map('mapDbSolicitudToUi', $respondedRows);
+            $adminPendingRequests = filterRequestsByStatus($adminPendingRequests, $adminPendingFilter);
+            $adminRespondedRequests = filterRequestsByStatus($adminRespondedRequests, $adminHistoryFilter);
             $allRequests = array_merge($adminPendingRequests, $adminRespondedRequests);
         }
     } catch (Throwable $e) {

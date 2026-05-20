@@ -208,6 +208,19 @@
                             <p class="mt-3 text-slate-600">Aquí puedes consultar tus solicitudes registradas y sus estados.</p>
                         </div>
                     </div>
+                    <form method="get" action="" class="mt-6 flex flex-wrap items-center gap-4">
+                        <input type="hidden" name="panel" value="student_requests">
+                        <label class="min-w-[220px]">
+                            <span class="sr-only">Filtrar por estado</span>
+                            <select name="student_filter" class="w-full rounded-3xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 focus:border-sky-500 focus:outline-none">
+                                <?php foreach ($studentStatusOptions as $value => $label): ?>
+                                    <option value="<?php echo htmlspecialchars($value); ?>" <?php echo $studentFilter === $value ? 'selected' : ''; ?>><?php echo htmlspecialchars($label); ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </label>
+                        <button type="submit" class="rounded-3xl bg-slate-900 px-6 py-3 text-white font-semibold hover:bg-slate-800 transition">Filtrar</button>
+                        <a href="?panel=student_requests" class="inline-flex items-center rounded-3xl border border-slate-300 bg-white px-6 py-3 text-slate-900 font-semibold hover:bg-slate-50 transition">Mostrar todo</a>
+                    </form>
 
                     <?php if ($pendingCount > 0 || $respondedCount > 0): ?>
                         <div class="mt-6 grid gap-4 sm:grid-cols-2">
@@ -255,8 +268,7 @@
                             <form method="post" action="" class="mt-8 space-y-5">
                                 <input type="hidden" name="action" value="submit_student_reply">
                                 <input type="hidden" name="panel" value="student_requests">
-                                <input type="hidden" name="request_id" value="<?php echo $replyRequest['id']; ?>">
-
+                                <input type="hidden" name="student_filter" value="<?php echo htmlspecialchars($studentFilter); ?>">
                                 <label class="block">
                                     <span class="text-sm font-semibold text-slate-700">Tu respuesta</span>
                                     <textarea name="student_response" rows="5" class="mt-2 w-full rounded-3xl border border-slate-300 bg-white px-4 py-3 focus:border-sky-500 focus:outline-none" placeholder="Escribe tu respuesta para el administrador..."></textarea>
@@ -264,7 +276,7 @@
 
                                 <div class="grid gap-4 sm:grid-cols-2">
                                     <button type="submit" class="rounded-3xl bg-gradient-to-r from-sky-600 to-indigo-600 px-6 py-4 text-white font-semibold hover:from-sky-700 hover:to-indigo-700 transition">Enviar respuesta</button>
-                                    <a href="?panel=student_requests" class="inline-flex items-center justify-center rounded-3xl border border-slate-300 bg-white px-6 py-4 text-slate-900 font-semibold hover:bg-slate-50 transition">Cancelar</a>
+                                    <a href="?panel=student_requests<?php echo $studentFilter !== 'all' ? '&student_filter=' . urlencode($studentFilter) : ''; ?>" class="inline-flex items-center justify-center rounded-3xl border border-slate-300 bg-white px-6 py-4 text-slate-900 font-semibold hover:bg-slate-50 transition">Cancelar</a>
                                 </div>
                             </form>
                         </div>
@@ -307,7 +319,7 @@
                                             <td class="px-6 py-4"><?php echo htmlspecialchars($request['observacion'] ?: 'Sin observación'); ?></td>
                                             <td class="px-6 py-4">
                                                 <?php if (in_array($request['estado'], ['Observada', 'Falta información', 'En espera'], true)): ?>
-                                                    <a href="?panel=student_requests&amp;reply_request_id=<?php echo $request['id']; ?>" class="inline-flex rounded-2xl bg-slate-900 px-4 py-2 text-white text-sm font-semibold hover:bg-slate-800 transition">Responder</a>
+                                                    <a href="?panel=student_requests&amp;reply_request_id=<?php echo $request['id']; ?><?php echo $studentFilter !== 'all' ? '&amp;student_filter=' . urlencode($studentFilter) : ''; ?>" class="inline-flex rounded-2xl bg-slate-900 px-4 py-2 text-white text-sm font-semibold hover:bg-slate-800 transition">Responder</a>
                                                 <?php else: ?>
                                                     —
                                                 <?php endif; ?>
@@ -330,6 +342,19 @@
                             <p class="mt-3 text-slate-600">Revisa y responde las solicitudes en estado pendiente.</p>
                         </div>
                     </div>
+                    <form method="get" action="" class="mt-6 flex flex-wrap items-center gap-4">
+                        <input type="hidden" name="panel" value="admin_requests">
+                        <label class="min-w-[220px]">
+                            <span class="sr-only">Filtrar solicitudes pendientes</span>
+                            <select name="admin_pending_filter" class="w-full rounded-3xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 focus:border-sky-500 focus:outline-none">
+                                <?php foreach ($adminPendingStatusOptions as $value => $label): ?>
+                                    <option value="<?php echo htmlspecialchars($value); ?>" <?php echo $adminPendingFilter === $value ? 'selected' : ''; ?>><?php echo htmlspecialchars($label); ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </label>
+                        <button type="submit" class="rounded-3xl bg-slate-900 px-6 py-3 text-white font-semibold hover:bg-slate-800 transition">Filtrar</button>
+                        <a href="?panel=admin_requests" class="inline-flex items-center rounded-3xl border border-slate-300 bg-white px-6 py-3 text-slate-900 font-semibold hover:bg-slate-50 transition">Mostrar todo</a>
+                    </form>
 
                     <?php if ($pendingCount > 0): ?>
                         <div class="mt-6 rounded-3xl bg-amber-50 border border-amber-200 p-5 text-amber-900">
@@ -404,6 +429,7 @@
                             <form method="post" action="" class="mt-8 space-y-5">
                                 <input type="hidden" name="action" value="submit_response">
                                 <input type="hidden" name="panel" value="admin_requests">
+                                <input type="hidden" name="admin_pending_filter" value="<?php echo htmlspecialchars($adminPendingFilter); ?>">
                                 <input type="hidden" name="request_id" value="<?php echo $respondRequest['id']; ?>">
 
                                 <label class="block">
@@ -425,7 +451,7 @@
 
                                 <div class="grid gap-4 sm:grid-cols-2">
                                     <button type="submit" class="rounded-3xl bg-gradient-to-r from-sky-600 to-indigo-600 px-6 py-4 text-white font-semibold hover:from-sky-700 hover:to-indigo-700 transition">Guardar respuesta</button>
-                                    <a href="?panel=admin_requests" class="inline-flex items-center justify-center rounded-3xl border border-slate-300 bg-white px-6 py-4 text-slate-900 font-semibold hover:bg-slate-50 transition">Cancelar</a>
+                                    <a href="?panel=admin_requests<?php echo $adminPendingFilter !== 'all' ? '&admin_pending_filter=' . urlencode($adminPendingFilter) : ''; ?>" class="inline-flex items-center justify-center rounded-3xl border border-slate-300 bg-white px-6 py-4 text-slate-900 font-semibold hover:bg-slate-50 transition">Cancelar</a>
                                 </div>
                             </form>
                         </div>
@@ -469,7 +495,7 @@
                                                 <?php endif; ?>
                                             </td>
                                             <td class="px-6 py-4">
-                                                <a href="?panel=admin_requests&amp;respond=<?php echo $request['id']; ?>" class="inline-flex rounded-2xl bg-sky-600 px-4 py-2 text-white text-sm font-semibold hover:bg-sky-700 transition">Responder</a>
+                                                <a href="?panel=admin_requests&amp;respond=<?php echo $request['id']; ?><?php echo $adminPendingFilter !== 'all' ? '&amp;admin_pending_filter=' . urlencode($adminPendingFilter) : ''; ?>" class="inline-flex rounded-2xl bg-sky-600 px-4 py-2 text-white text-sm font-semibold hover:bg-sky-700 transition">Responder</a>
                                             </td>
                                         </tr>
                                     <?php endforeach; ?>
@@ -491,6 +517,20 @@
                             <p class="mt-3 text-slate-600">Consulta el historial de trámites procesados.</p>
                         </div>
                     </div>
+                    <form method="get" action="" class="mt-6 flex flex-wrap items-center gap-4">
+                        <input type="hidden" name="panel" value="admin_reports">
+                        <label class="min-w-[220px]">
+                            <span class="sr-only">Filtrar historial por estado</span>
+                            <select name="admin_history_filter" class="w-full rounded-3xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 focus:border-sky-500 focus:outline-none">
+                                <option value="" <?php echo $adminHistoryFilter === '' ? 'selected' : ''; ?>>Selecciona un estado</option>
+                                <?php foreach ($adminHistoryStatusOptions as $value => $label): ?>
+                                    <option value="<?php echo htmlspecialchars($value); ?>" <?php echo $adminHistoryFilter === $value ? 'selected' : ''; ?>><?php echo htmlspecialchars($label); ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </label>
+                        <button type="submit" class="rounded-3xl bg-slate-900 px-6 py-3 text-white font-semibold hover:bg-slate-800 transition">Filtrar</button>
+                        <a href="?panel=admin_reports" class="inline-flex items-center rounded-3xl border border-slate-300 bg-white px-6 py-3 text-slate-900 font-semibold hover:bg-slate-50 transition">Mostrar todo</a>
+                    </form>
 
                     <?php if (!empty($editRequest)): ?>
                         <section class="mt-8 rounded-3xl bg-slate-50 p-6 border border-slate-200 shadow-sm">
@@ -504,8 +544,7 @@
                             <form method="post" action="" class="mt-6 space-y-4">
                                 <input type="hidden" name="action" value="update_request">
                                 <input type="hidden" name="panel" value="admin_reports">
-                                <input type="hidden" name="request_id" value="<?php echo $editRequest['id']; ?>">
-
+                                <input type="hidden" name="admin_history_filter" value="<?php echo htmlspecialchars($adminHistoryFilter); ?>">
                                 <div class="grid gap-4 md:grid-cols-2">
                                     <label class="block">
                                         <span class="text-sm font-semibold text-slate-700">Estado</span>
@@ -560,10 +599,11 @@
                                             <td class="px-6 py-4"><?php echo htmlspecialchars(formatDate($request['respuesta_fecha'])); ?></td>
                                             <td class="px-6 py-4">
                                                 <div class="flex flex-wrap gap-2">
-                                                    <a href="?panel=admin_reports&edit_request_id=<?php echo $request['id']; ?>" class="inline-flex items-center rounded-2xl bg-slate-900 px-4 py-2 text-xs font-semibold text-white hover:bg-slate-800 transition">Editar</a>
+                                                    <a href="?panel=admin_reports&edit_request_id=<?php echo $request['id']; ?><?php echo $adminHistoryFilter !== 'all' ? '&admin_history_filter=' . urlencode($adminHistoryFilter) : ''; ?>" class="inline-flex items-center rounded-2xl bg-slate-900 px-4 py-2 text-xs font-semibold text-white hover:bg-slate-800 transition">Editar</a>
                                                     <form method="post" action="" class="inline-block" onsubmit="return confirm('¿Eliminar esta solicitud?');">
                                                         <input type="hidden" name="action" value="delete_request">
                                                         <input type="hidden" name="panel" value="admin_reports">
+                                                        <input type="hidden" name="admin_history_filter" value="<?php echo htmlspecialchars($adminHistoryFilter); ?>">
                                                         <input type="hidden" name="request_id" value="<?php echo $request['id']; ?>">
                                                         <button type="submit" class="inline-flex items-center rounded-2xl bg-rose-600 px-4 py-2 text-xs font-semibold text-white hover:bg-rose-700 transition">Eliminar</button>
                                                     </form>
