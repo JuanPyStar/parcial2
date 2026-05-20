@@ -430,7 +430,28 @@
                             </form>
                         </div>
                     <?php else: ?>
-                        <div class="mt-8 overflow-x-auto rounded-3xl border border-slate-200">
+                        <form method="get" action="" class="mt-8 flex flex-col md:flex-row gap-4">
+                            <input type="hidden" name="panel" value="admin_requests">
+                            <input type="text" name="search" placeholder="Buscar por ID o Estudiante" value="<?php echo htmlspecialchars($_GET['search'] ?? ''); ?>" class="flex-1 rounded-3xl border border-slate-300 bg-white px-4 py-3 focus:border-sky-500 focus:outline-none text-sm">
+                            <select name="filter_type" class="rounded-3xl border border-slate-300 bg-white px-4 py-3 focus:border-sky-500 focus:outline-none text-sm">
+                                <option value="">Todos los tipos</option>
+                                <?php foreach ($requestTypes as $id => $label): ?>
+                                    <option value="<?php echo $id; ?>" <?php echo (isset($_GET['filter_type']) && (int)$_GET['filter_type'] === $id) ? 'selected' : ''; ?>><?php echo htmlspecialchars($label); ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                            <select name="filter_status" class="rounded-3xl border border-slate-300 bg-white px-4 py-3 focus:border-sky-500 focus:outline-none text-sm">
+                                <option value="">Todos los pendientes</option>
+                                <option value="Pendiente" <?php echo (isset($_GET['filter_status']) && $_GET['filter_status'] === 'Pendiente') ? 'selected' : ''; ?>>Pendiente / Sin responder</option>
+                                <option value="Falta información" <?php echo (isset($_GET['filter_status']) && $_GET['filter_status'] === 'Falta información') ? 'selected' : ''; ?>>Falta información</option>
+                                <option value="En espera" <?php echo (isset($_GET['filter_status']) && $_GET['filter_status'] === 'En espera') ? 'selected' : ''; ?>>En espera</option>
+                            </select>
+                            <button type="submit" class="rounded-3xl bg-slate-900 px-6 py-3 text-white font-semibold hover:bg-slate-800 transition text-sm">Filtrar</button>
+                            <?php if (!empty($_GET['search']) || !empty($_GET['filter_type']) || !empty($_GET['filter_status'])): ?>
+                                <a href="?panel=admin_requests" class="inline-flex items-center justify-center rounded-3xl border border-slate-300 bg-white px-6 py-3 text-slate-900 font-semibold hover:bg-slate-50 transition text-sm">Limpiar</a>
+                            <?php endif; ?>
+                        </form>
+
+                        <div class="mt-6 overflow-x-auto rounded-3xl border border-slate-200">
                             <table class="min-w-full divide-y divide-slate-200 text-sm text-left">
                             <thead class="bg-slate-50 text-slate-600">
                                 <tr>
@@ -528,7 +549,31 @@
                         </section>
                     <?php endif; ?>
 
-                    <div class="mt-8 overflow-x-auto rounded-3xl border border-slate-200">
+                    <?php if (empty($editRequest)): ?>
+                    <form method="get" action="" class="mt-8 flex flex-col md:flex-row gap-4">
+                        <input type="hidden" name="panel" value="admin_reports">
+                        <input type="text" name="search" placeholder="Buscar por ID o Estudiante" value="<?php echo htmlspecialchars($_GET['search'] ?? ''); ?>" class="flex-1 rounded-3xl border border-slate-300 bg-white px-4 py-3 focus:border-sky-500 focus:outline-none text-sm">
+                        <select name="filter_type" class="rounded-3xl border border-slate-300 bg-white px-4 py-3 focus:border-sky-500 focus:outline-none text-sm">
+                            <option value="">Todos los tipos</option>
+                            <?php foreach ($requestTypes as $id => $label): ?>
+                                <option value="<?php echo $id; ?>" <?php echo (isset($_GET['filter_type']) && (int)$_GET['filter_type'] === $id) ? 'selected' : ''; ?>><?php echo htmlspecialchars($label); ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                        <select name="filter_status" class="rounded-3xl border border-slate-300 bg-white px-4 py-3 focus:border-sky-500 focus:outline-none text-sm">
+                            <option value="">Todos los estados</option>
+                            <option value="Aprobada" <?php echo (isset($_GET['filter_status']) && $_GET['filter_status'] === 'Aprobada') ? 'selected' : ''; ?>>Aprobada</option>
+                            <option value="Rechazada" <?php echo (isset($_GET['filter_status']) && $_GET['filter_status'] === 'Rechazada') ? 'selected' : ''; ?>>Rechazada</option>
+                            <option value="Observada" <?php echo (isset($_GET['filter_status']) && $_GET['filter_status'] === 'Observada') ? 'selected' : ''; ?>>Observada</option>
+                            <option value="Respondida" <?php echo (isset($_GET['filter_status']) && $_GET['filter_status'] === 'Respondida') ? 'selected' : ''; ?>>Respondida</option>
+                        </select>
+                        <button type="submit" class="rounded-3xl bg-slate-900 px-6 py-3 text-white font-semibold hover:bg-slate-800 transition text-sm">Filtrar</button>
+                        <?php if (!empty($_GET['search']) || !empty($_GET['filter_type']) || !empty($_GET['filter_status'])): ?>
+                            <a href="?panel=admin_reports" class="inline-flex items-center justify-center rounded-3xl border border-slate-300 bg-white px-6 py-3 text-slate-900 font-semibold hover:bg-slate-50 transition text-sm">Limpiar</a>
+                        <?php endif; ?>
+                    </form>
+                    <?php endif; ?>
+
+                    <div class="mt-6 overflow-x-auto rounded-3xl border border-slate-200">
                         <table class="min-w-full divide-y divide-slate-200 text-sm text-left">
                             <thead class="bg-slate-50 text-slate-600">
                                 <tr>
