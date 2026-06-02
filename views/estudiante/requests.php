@@ -1,0 +1,63 @@
+<?php include __DIR__ . '/../layout/result.php'; ?>
+<?php include __DIR__ . '/navigation.php'; ?>
+    <article class="rounded-3xl bg-white p-6 shadow-xl border border-slate-200">
+        <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <div>
+                <h2 class="text-2xl font-semibold text-slate-900">Mis solicitudes</h2>
+                <p class="mt-2 text-slate-600">Revisa el estado de tus solicitudes y responde si es necesario.</p>
+            </div>
+            <a href="index.php?controller=Solicitud&action=index&panel=new_request" class="rounded-2xl bg-slate-900 px-5 py-3 text-white font-semibold hover:bg-slate-800 transition">Nueva solicitud</a>
+        </div>
+
+        <?php if (empty($studentRequests)): ?>
+            <div class="mt-8 rounded-3xl bg-slate-50 p-6 text-slate-600 border border-slate-200">No hay solicitudes registradas aún.</div>
+        <?php else: ?>
+            <div class="mt-8 overflow-x-auto rounded-3xl border border-slate-200 bg-slate-50 shadow-sm">
+                <table class="min-w-full divide-y divide-slate-200 text-left text-sm text-slate-700">
+                    <thead class="bg-slate-100 text-slate-600">
+                        <tr>
+                            <th class="px-6 py-4 font-semibold">ID</th>
+                            <th class="px-6 py-4 font-semibold">Tipo</th>
+                            <th class="px-6 py-4 font-semibold">Estado</th>
+                            <th class="px-6 py-4 font-semibold">Fecha</th>
+                            <th class="px-6 py-4 font-semibold">Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-200 bg-white">
+                        <?php foreach ($studentRequests as $request): ?>
+                            <tr>
+                                <td class="px-6 py-4 font-semibold text-slate-900"><?php echo htmlspecialchars($request['id']); ?></td>
+                                <td class="px-6 py-4"><?php echo htmlspecialchars(getLabel($requestTypes, $request['tipo_solicitud_id'])); ?></td>
+                                <td class="px-6 py-4"><?php echo htmlspecialchars($request['estado']); ?></td>
+                                <td class="px-6 py-4"><?php echo htmlspecialchars(formatDate($request['fecha'])); ?></td>
+                                <td class="px-6 py-4 space-x-2">
+                                    <?php if (!in_array($request['estado'], ['Aprobada','Rechazada'], true)): ?>
+                                        <a href="index.php?controller=Solicitud&action=index&panel=student_requests&reply_request_id=<?php echo $request['id']; ?>" class="rounded-full bg-slate-900 px-4 py-2 text-white text-sm hover:bg-slate-800 transition">Responder</a>
+                                    <?php else: ?>
+                                        <span class="inline-flex rounded-full bg-emerald-100 px-3 py-2 text-emerald-700 text-sm">Ver</span>
+                                    <?php endif; ?>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+        <?php endif; ?>
+
+        <?php if (!empty($replyRequest)): ?>
+            <article class="mt-8 rounded-3xl bg-white p-6 shadow-xl border border-slate-200">
+                <h3 class="text-xl font-semibold text-slate-900">Responder solicitud #<?php echo htmlspecialchars($replyRequest['id']); ?></h3>
+                <form method="post" action="index.php?controller=Solicitud&action=index" class="mt-6 space-y-4">
+                    <input type="hidden" name="action" value="submit_student_reply">
+                    <input type="hidden" name="request_id" value="<?php echo htmlspecialchars($replyRequest['id']); ?>">
+                    <label class="block">
+                        <span class="text-sm font-semibold text-slate-700">Respuesta</span>
+                        <textarea name="student_response" rows="4" class="mt-2 w-full rounded-3xl border border-slate-300 bg-white px-4 py-3" required></textarea>
+                    </label>
+                    <button type="submit" class="rounded-2xl bg-slate-900 px-5 py-3 text-white font-semibold hover:bg-slate-800 transition">Enviar respuesta</button>
+                </form>
+            </article>
+        <?php endif; ?>
+    </article>
+</section>
+</div>

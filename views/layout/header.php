@@ -13,17 +13,17 @@
                 <div>
                     <p class="uppercase tracking-[0.3em] text-slate-300 text-sm">Interfaz académica</p>
                     <h1 class="mt-2 text-4xl font-extrabold tracking-tight">Gestión de Solicitudes Académicas</h1>
-                    <p class="mt-3 max-w-2xl text-slate-200">Sistema reportes academicos</p>
+                    <p class="mt-3 max-w-2xl text-slate-200">Sistema de gestión de solicitudes académicas.</p>
                 </div>
-                <?php if ($currentUser): ?>
+                <?php if (!empty($currentUser)): ?>
                     <div class="rounded-3xl border border-white/10 bg-white/10 p-4 text-slate-100 shadow-xl backdrop-blur">
                         <p class="text-sm text-slate-200">Sesión iniciada</p>
                         <p class="mt-2 text-lg font-semibold"><?php echo htmlspecialchars(trim(($currentUser['nombre'] ?? '') . ' ' . ($currentUser['apellido'] ?? ''))); ?></p>
                         <p class="text-sm text-slate-200"><?php echo htmlspecialchars($currentUserRole === 'student' ? 'Estudiante' : 'Administrador'); ?></p>
                         <?php if ($currentUserRole === 'student'): ?>
-                            <p class="text-sm text-slate-200">Programa: <?php echo htmlspecialchars($currentUser['programa']); ?></p>
+                            <p class="text-sm text-slate-200">Programa: <?php echo htmlspecialchars($currentUser['programa'] ?? ''); ?></p>
                         <?php else: ?>
-                            <p class="text-sm text-slate-200">Rol: <?php echo htmlspecialchars($currentUser['rol']); ?></p>
+                            <p class="text-sm text-slate-200">Rol: <?php echo htmlspecialchars($currentUser['rol'] ?? ''); ?></p>
                         <?php endif; ?>
                     </div>
                 <?php endif; ?>
