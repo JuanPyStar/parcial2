@@ -1,4 +1,5 @@
 <div class="grid gap-6 xl:grid-cols-[280px_1fr]">
+    <?php $selectedPanel = $selectedPanel ?? ''; ?>
     <aside class="rounded-3xl bg-white p-6 shadow-2xl border border-slate-200">
         <p class="text-sm uppercase tracking-[0.3em] text-slate-500">Panel de estudiante</p>
         <nav class="mt-6 space-y-3">

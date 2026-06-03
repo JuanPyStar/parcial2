@@ -118,7 +118,7 @@ final class SolicitudModel extends BaseModel
         return $stmt->rowCount() > 0;
     }
 
-    public function enviarRespuestaEstudiante(int $id_solicitud, string $respuesta): bool
+    public function enviarRespuestaEstudiante(int $id_solicitud, string $respuesta, ?string $documento = null): bool
     {
         $existing = $this->buscarPorId($id_solicitud);
         if (!$existing) {
@@ -135,12 +135,14 @@ final class SolicitudModel extends BaseModel
         $stmt = $this->pdo->prepare(
             'UPDATE solicitud
              SET observacion = :observacion,
-                 estado = :estado
+                 estado = :estado,
+                 documento = COALESCE(:documento, documento)
              WHERE id_solicitud = :id'
         );
         $stmt->execute([
             ':observacion' => $observacion,
             ':estado' => 'En espera',
+            ':documento' => $documento,
             ':id' => $id_solicitud,
         ]);
         return $stmt->rowCount() > 0;

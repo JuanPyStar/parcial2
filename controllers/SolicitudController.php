@@ -15,9 +15,54 @@ class SolicitudController extends BaseController
     public function __construct()
     {
         $this->programs = [
+            117 => 'Técnica Profesional en Operaciones Logísticas',
+            118 => 'Tecnología en Gestión Logística Empresarial',
+            119 => 'Técnica Profesional en Producción Gráfica',
+            120 => 'Tecn. en Gestión de Contenidos Gráficos Publicitarios',
+            121 => 'Diseño Gráfico',
+            123 => 'Técnica Profesional en Soporte Informático',
             124 => 'Tecnología en Desarrollo de Software',
             125 => 'Ingeniería de Software',
-            121 => 'Administración de Negocios Internacionales',
+            126 => 'Especialización en Gestión Pública',
+            127 => 'Tecn. en Gestión de Contenidos Gráficos Public. Ocaña',
+            128 => 'Diseño Gráfico Ocaña',
+            130 => 'Tecn. en Gestión de Negocios Internacionales Ocaña',
+            131 => 'Administración de Negocios Internacionales Ocaña',
+            133 => 'Técnica Prof. en Operaciones Turísticas Virtual',
+            134 => 'Tecnología en Gestión de Turismo Sostenible Virtual',
+            135 => 'Profesional en Administración Turística y Hotelera Virtual',
+            136 => 'Técnica Prof. en Operaciones Turísticas Presencial',
+            137 => 'Tecnología en Gestión del Turismo Sostenible Presencial',
+            138 => 'Profesional en Administración Turística y Hotelera Presencial',
+            143 => 'Técnica Profesional en Procesos Contables Presencial',
+            144 => 'Tecnología en Gestión Financiera Presencial',
+            145 => 'Administración Financiera Presencial',
+            146 => 'Técnica Profesional en Procesos Contables Distancia',
+            147 => 'Tecnología en Gestión Financiera Distancia',
+            148 => 'Administración Financiera Distancia',
+            151 => 'Técnica Prof. en Operaciones Aduaneras y de Comercio Int. Pres',
+            152 => 'Tecnología en Gestión de Marketing de Negocios Int. Pres',
+            153 => 'Administración de Negocios Internacionales Presencial',
+            154 => 'Técnica Prof. en Operaciones Aduaneras y Comercio Int. Dist',
+            155 => 'Tecnología en Gestión de Marketing de Negocios Int. Dist',
+            156 => 'Administración de Negocios Internacionales Distancia',
+            157 => 'Técnica Profesional en Procesos de Diseño de Modas',
+            158 => 'Tecnología en Gestión de Diseño de Modas',
+            159 => 'Profesional en Diseño y Administración de Negocios de la Moda',
+            162 => 'Técnica Prof. en Operaciones Aduaneras y Comercio Int. Virtual',
+            163 => 'Tecnología en Gestión de Comercio Internacional Virtual',
+            164 => 'Administración de Negocios Internacionales Virtual',
+            165 => 'Especialización en Analítica de Datos para los Negocios Pres',
+            166 => 'Especialización en Analítica de Datos para los Negocios Virtual',
+            167 => 'Técnica Profesional en Operaciones Logísticas',
+            168 => 'Tecnología en Gestión Logística Empresarial',
+            169 => 'Profesional en Administración Logística Internacional',
+            174 => 'Técnico Profesional en Producción Gráfica',
+            175 => 'Tecn. en Gestión de Contenidos Gráficos Publicitarios',
+            176 => 'Profesional en Diseño Gráfico',
+            177 => 'Especialización en Marketing Digital Estratégico Presencial',
+            179 => 'Especialización en Marketing Digital Estratégico Virtual',
+            75 => 'Administración Financiera - Ocaña',
         ];
         $this->campuses = [1 => 'Cúcuta', 2 => 'Ocaña'];
         $this->shifts = [1 => 'Diurna', 2 => 'Nocturna', 3 => 'Distancia', 4 => 'Virtual'];
@@ -38,8 +83,39 @@ class SolicitudController extends BaseController
             foreach ($tipoSolicitudModel->listar() as $tipo) {
                 $requestTypes[(int)$tipo['id_tipo_solicitud']] = $tipo['nombre_tipo'];
             }
+            if (count($requestTypes) < 13) {
+                $requestTypes = [
+                    1 => 'Cancelación de semestre',
+                    2 => 'Curso dirigido',
+                    3 => 'Cancelación de asignaturas',
+                    4 => 'Cambio de jornada',
+                    5 => 'Transferencia interna',
+                    6 => 'Examen de validación por suficiencia',
+                    7 => 'Reingreso',
+                    8 => 'Matrícula mínima de créditos',
+                    9 => 'Traslado de sede',
+                    10 => 'Pago de créditos adicionales',
+                    11 => 'Constancia de estudio',
+                    12 => 'Certificado de notas',
+                    13 => 'Otra',
+                ];
+            }
         } catch (Throwable $e) {
-            $requestTypes = [1 => 'Cancelación de semestre', 2 => 'Curso dirigido', 3 => 'Cancelación de asignaturas'];
+            $requestTypes = [
+                1 => 'Cancelación de semestre',
+                2 => 'Curso dirigido',
+                3 => 'Cancelación de asignaturas',
+                4 => 'Cambio de jornada',
+                5 => 'Transferencia interna',
+                6 => 'Examen de validación por suficiencia',
+                7 => 'Reingreso',
+                8 => 'Matrícula mínima de créditos',
+                9 => 'Traslado de sede',
+                10 => 'Pago de créditos adicionales',
+                11 => 'Constancia de estudio',
+                12 => 'Certificado de notas',
+                13 => 'Otra',
+            ];
         }
 
         // Load students and admins
@@ -75,7 +151,11 @@ class SolicitudController extends BaseController
         // Refresh request lists
         $studentFilter = (string)($_REQUEST['student_filter'] ?? 'all');
         $adminPendingFilter = (string)($_REQUEST['admin_pending_filter'] ?? 'all');
-        $adminHistoryFilter = (string)($_REQUEST['admin_history_filter'] ?? '');
+        $adminPendingDate = trim((string)($_REQUEST['admin_pending_date'] ?? ''));
+        $adminPendingDocument = trim((string)($_REQUEST['admin_pending_document'] ?? ''));
+        $adminHistoryFilter = (string)($_REQUEST['admin_history_filter'] ?? 'all');
+        $adminHistoryDate = trim((string)($_REQUEST['admin_history_date'] ?? ''));
+        $adminHistoryDocument = trim((string)($_REQUEST['admin_history_document'] ?? ''));
 
         $studentRequests = [];
         $adminPendingRequests = [];
@@ -96,15 +176,19 @@ class SolicitudController extends BaseController
                 $adminPendingRequests = array_map('mapDbSolicitudToUi', $pendingRows);
                 $adminRespondedRequests = array_map('mapDbSolicitudToUi', $respondedRows);
                 $adminPendingRequests = filterRequestsByStatus($adminPendingRequests, $adminPendingFilter);
+                $adminPendingRequests = filterRequestsByDate($adminPendingRequests, $adminPendingDate);
+                $adminPendingRequests = filterRequestsByDocument($adminPendingRequests, $adminPendingDocument, $students);
                 $adminRespondedRequests = filterRequestsByStatus($adminRespondedRequests, $adminHistoryFilter);
+                $adminRespondedRequests = filterRequestsByDate($adminRespondedRequests, $adminHistoryDate);
+                $adminRespondedRequests = filterRequestsByDocument($adminRespondedRequests, $adminHistoryDocument, $students);
                 $allRequests = array_merge($adminPendingRequests, $adminRespondedRequests);
             }
         } catch (Throwable $e) {
             // ignore DB errors
         }
 
-        // Handle GET actions: edit/respond/reply
-        $editRequest = null; $respondRequest = null; $replyRequest = null;
+        // Handle GET actions: edit/respond/view/reply
+        $editRequest = null; $respondRequest = null; $replyRequest = null; $viewRequest = null;
         if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['edit_request_id']) && $currentUserRole === 'admin') {
             $id = intval($_GET['edit_request_id']);
             if ($id > 0) {
@@ -115,6 +199,12 @@ class SolicitudController extends BaseController
             $id = intval($_GET['respond']);
             if ($id > 0) {
                 try { $row = (new SolicitudModel())->buscarPorId($id); if ($row) $respondRequest = mapDbSolicitudToUi($row); } catch (Throwable $e) {}
+            }
+        }
+        if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['view_request_id']) && $currentUserRole === 'student') {
+            $id = intval($_GET['view_request_id']);
+            if ($id > 0) {
+                try { $row = (new SolicitudModel())->buscarPorId($id); if ($row && (int)$row['id_estudiante'] === (int)$currentUserId) $viewRequest = mapDbSolicitudToUi($row); } catch (Throwable $e) {}
             }
         }
         if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['reply_request_id']) && $currentUserRole === 'student') {
@@ -208,18 +298,49 @@ class SolicitudController extends BaseController
             if ($actionPost === 'submit_student_reply' && $currentUserRole === 'student') {
                 $requestId = intval($_POST['request_id'] ?? 0);
                 $studentResponse = trim($_POST['student_response'] ?? '');
+                $uploadedFile = null;
+                if (isset($_FILES['response_document']) && $_FILES['response_document']['error'] !== UPLOAD_ERR_NO_FILE) {
+                    $file = $_FILES['response_document'];
+                    $allowedTypes = ['application/pdf','application/msword','application/vnd.openxmlformats-officedocument.wordprocessingml.document','image/jpeg','image/png'];
+                    $maxSize = 5 * 1024 * 1024;
+                    if ($file['error'] !== UPLOAD_ERR_OK) {
+                        $errors[] = 'Error al subir el archivo.';
+                    } elseif (!in_array($file['type'], $allowedTypes)) {
+                        $errors[] = 'Tipo de archivo no permitido.';
+                    } elseif ($file['size'] > $maxSize) {
+                        $errors[] = 'El archivo es demasiado grande.';
+                    } else {
+                        $uploadDir = __DIR__ . '/../public/uploads/';
+                        if (!is_dir($uploadDir)) mkdir($uploadDir, 0755, true);
+                        $fileName = uniqid() . '_' . basename($file['name']);
+                        $filePath = $uploadDir . $fileName;
+                        if (move_uploaded_file($file['tmp_name'], $filePath)) {
+                            $uploadedFile = $fileName;
+                        } else {
+                            $errors[] = 'Error al guardar el archivo.';
+                        }
+                    }
+                }
+
                 if ($requestId <= 0) $errors[] = 'Selecciona una solicitud válida para responder.';
                 if ($studentResponse === '') $errors[] = 'Escribe tu respuesta antes de enviarla.';
                 if (empty($errors)) {
                     try {
                         $model = new SolicitudModel();
                         $existing = $model->buscarPorId($requestId);
-                        if (!$existing || (int)$existing['id_estudiante'] !== (int)$currentUserId) $errors[] = 'No se encontró la solicitud seleccionada.';
-                        elseif (in_array($existing['estado'], ['Aprobada','Rechazada'], true)) $errors[] = 'No puedes responder una solicitud que ya fue aprobada o rechazada.';
-                        else {
-                            $ok = $model->enviarRespuestaEstudiante($requestId,$studentResponse);
-                            if (!$ok) $errors[] = 'No se pudo enviar la respuesta.';
-                            else $result = ['type'=>'info','message'=>'Tu respuesta fue enviada al administrador.'];
+                        if (!$existing || (int)$existing['id_estudiante'] !== (int)$currentUserId) {
+                            $errors[] = 'No se encontró la solicitud seleccionada.';
+                        } elseif (in_array($existing['estado'], ['Aprobada','Rechazada'], true)) {
+                            $errors[] = 'No puedes responder una solicitud que ya fue aprobada o rechazada.';
+                        } else {
+                            $ok = $model->enviarRespuestaEstudiante($requestId, $studentResponse, $uploadedFile);
+                            if (!$ok) {
+                                $errors[] = 'No se pudo enviar la respuesta.';
+                            } else {
+                                $result = ['type'=>'info','message'=>'Tu respuesta fue enviada al administrador.'];
+                                $rows = (new SolicitudModel())->listarPorEstudiante((int)$currentUserId);
+                                $studentRequests = array_map('mapDbSolicitudToUi',$rows);
+                            }
                         }
                     } catch (Throwable $e) { $errors[] = 'No se pudo enviar la respuesta. Inténtalo de nuevo.'; }
                 }
@@ -268,11 +389,11 @@ class SolicitudController extends BaseController
         $viewMap = [];
         if ($currentUserRole === 'student') {
             $viewMap = [
-                'dashboard' => 'student/dashboard',
-                'new_request' => 'student/new_request',
-                'student_requests' => 'student/requests',
-                'profile' => 'student/profile',
-                'help' => 'student/help',
+                'dashboard' => 'estudiante/dashboard',
+                'new_request' => 'estudiante/new_request',
+                'student_requests' => 'estudiante/requests',
+                'profile' => 'estudiante/profile',
+                'help' => 'estudiante/help',
             ];
         } elseif ($currentUserRole === 'admin') {
             $viewMap = [
@@ -307,16 +428,21 @@ class SolicitudController extends BaseController
             'editRequest' => $editRequest,
             'respondRequest' => $respondRequest,
             'replyRequest' => $replyRequest,
+            'viewRequest' => $viewRequest,
             'studentFilter' => $studentFilter,
             'adminPendingFilter' => $adminPendingFilter,
+            'adminPendingDate' => $adminPendingDate,
+            'adminPendingDocument' => $adminPendingDocument,
             'adminHistoryFilter' => $adminHistoryFilter,
+            'adminHistoryDate' => $adminHistoryDate,
+            'adminHistoryDocument' => $adminHistoryDocument,
             'studentStatusOptions' => [
                 'all' => 'Todos', 'Pendiente' => 'Pendiente', 'Aprobada' => 'Aprobada'
             ],
             'adminPendingStatusOptions' => ['all' => 'Todos', 'Pendiente' => 'Pendiente'],
         ];
 
-        $view = $viewMap[$panel] ?? ($currentUserRole === 'student' ? 'student/dashboard' : 'admin/dashboard');
+        $view = $viewMap[$panel] ?? ($currentUserRole === 'student' ? 'estudiante/dashboard' : 'admin/dashboard');
         $this->render($view, $data);
     }
 }

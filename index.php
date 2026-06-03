@@ -17,7 +17,7 @@ require_once $controllerFile;
 
 if (!class_exists($controllerClass)) {
     http_response_code(500);
-    echo 'Clase de controlador inválida';
+    echo 'Clase de controlador inválida';   
     exit;
 }
 

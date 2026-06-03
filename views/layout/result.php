@@ -1,5 +1,9 @@
 <?php if (!empty($result)): ?>
     <?php
+        $requestTypes = $requestTypes ?? [];
+        $programs = $programs ?? [];
+        $campuses = $campuses ?? [];
+        $shifts = $shifts ?? [];
         $resultClasses = 'rounded-3xl p-6 shadow-2xl border ';
         if (in_array($result['type'], ['student_request', 'admin_response', 'info'], true)) {
             $resultClasses .= 'bg-emerald-50 border-emerald-200 text-emerald-900';

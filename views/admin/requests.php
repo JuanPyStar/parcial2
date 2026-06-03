@@ -1,3 +1,6 @@
+<?php $adminPendingFilter = $adminPendingFilter ?? 'all'; ?>
+<?php $adminPendingDate = $adminPendingDate ?? ''; ?>
+<?php $adminPendingDocument = $adminPendingDocument ?? ''; ?>
 <?php include __DIR__ . '/../layout/result.php'; ?>
 <?php include __DIR__ . '/navigation.php'; ?>
     <article class="rounded-3xl bg-white p-6 shadow-xl border border-slate-200">
@@ -6,14 +9,18 @@
                 <h2 class="text-2xl font-semibold text-slate-900">Solicitudes pendientes</h2>
                 <p class="mt-2 text-slate-600">Revisa y responde las solicitudes que están en pendiente.</p>
             </div>
-            <form method="get" action="index.php" class="flex flex-col gap-3 sm:flex-row sm:items-center">
+            <form method="get" action="index.php" class="grid gap-3 sm:grid-flow-col sm:auto-cols-max sm:items-center">
                 <input type="hidden" name="controller" value="Solicitud">
                 <input type="hidden" name="action" value="index">
                 <input type="hidden" name="panel" value="admin_requests">
                 <select name="admin_pending_filter" class="rounded-3xl border border-slate-300 bg-white px-4 py-3 text-slate-700">
                     <option value="all" <?php echo $adminPendingFilter === 'all' ? 'selected' : ''; ?>>Todos</option>
                     <option value="Pendiente" <?php echo $adminPendingFilter === 'Pendiente' ? 'selected' : ''; ?>>Pendiente</option>
+                    <option value="Falta información" <?php echo $adminPendingFilter === 'Falta información' ? 'selected' : ''; ?>>Falta información</option>
+                    <option value="En espera" <?php echo $adminPendingFilter === 'En espera' ? 'selected' : ''; ?>>En espera</option>
                 </select>
+                <input type="date" name="admin_pending_date" value="<?php echo htmlspecialchars($adminPendingDate); ?>" class="rounded-3xl border border-slate-300 bg-white px-4 py-3 text-slate-700" placeholder="Fecha">
+                <input type="text" name="admin_pending_document" value="<?php echo htmlspecialchars($adminPendingDocument); ?>" class="rounded-3xl border border-slate-300 bg-white px-4 py-3 text-slate-700" placeholder="Documento estudiante">
                 <button type="submit" class="rounded-2xl bg-slate-900 px-5 py-3 text-white font-semibold hover:bg-slate-800 transition">Filtrar</button>
             </form>
         </div>
@@ -36,7 +43,7 @@
                         <?php foreach ($adminPendingRequests as $request): ?>
                             <tr>
                                 <td class="px-6 py-4 font-semibold text-slate-900"><?php echo htmlspecialchars($request['id']); ?></td>
-                                <td class="px-6 py-4"><?php echo htmlspecialchars($students[$request['id_estudiante']]['nombre'] ?? '') . ' ' . htmlspecialchars($students[$request['id_estudiante']]['apellido'] ?? ''); ?></td>
+                                <td class="px-6 py-4"><?php echo htmlspecialchars($students[$request['estudiante_id']]['nombre'] ?? '') . ' ' . htmlspecialchars($students[$request['estudiante_id']]['apellido'] ?? ''); ?></td>
                                 <td class="px-6 py-4"><?php echo htmlspecialchars(getLabel($requestTypes, $request['tipo_solicitud_id'])); ?></td>
                                 <td class="px-6 py-4"><?php echo htmlspecialchars(formatDate($request['fecha'])); ?></td>
                                 <td class="px-6 py-4 space-x-2">

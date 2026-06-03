@@ -49,6 +49,68 @@ function filterRequestsByStatus(array $requests, string $status): array
     }));
 }
 
+function filterRequestsByDate(array $requests, string $date): array
+{
+    if ($date === '') {
+        return $requests;
+    }
+
+    $timestamp = strtotime($date);
+    if ($timestamp === false) {
+        return $requests;
+    }
+
+    $formattedDate = date('Y-m-d', $timestamp);
+
+    return array_values(array_filter($requests, function (array $request) use ($formattedDate) {
+        return isset($request['fecha']) && str_starts_with($request['fecha'], $formattedDate);
+    }));
+}
+
+function normalizeDocumentString(string $value): string
+{
+    return preg_replace('/[^\p{L}\p{N}]+/u', '', mb_strtolower(trim($value)));
+}
+
+function filterRequestsByDocument(array $requests, string $document, array $students): array
+{
+    if ($document === '') {
+        return $requests;
+    }
+
+    $term = normalizeDocumentString($document);
+    if ($term === '') {
+        return $requests;
+    }
+
+    return array_values(array_filter($requests, function (array $request) use ($term, $students) {
+        $documentoRaw = $students[$request['estudiante_id']]['documento'] ?? '';
+        $documentoNormalized = normalizeDocumentString($documentoRaw);
+
+        return $documentoNormalized !== '' && mb_stripos($documentoNormalized, $term) !== false;
+    }));
+}
+
+function filterRequestsBySearch(array $requests, string $search, array $students, array $requestTypes): array
+{
+    if ($search === '') {
+        return $requests;
+    }
+
+    $term = mb_strtolower(trim($search));
+    return array_values(array_filter($requests, function (array $request) use ($term, $students, $requestTypes) {
+        $tipo = mb_strtolower($requestTypes[$request['tipo_solicitud_id']] ?? '');
+        $fecha = mb_strtolower(formatDate($request['fecha']));
+        $estado = mb_strtolower($request['estado'] ?? '');
+        $documento = mb_strtolower($students[$request['estudiante_id']]['documento'] ?? '');
+
+        return mb_stripos($tipo, $term) !== false
+            || mb_stripos($fecha, $term) !== false
+            || mb_stripos($documento, $term) !== false
+            || mb_stripos($estado, $term) !== false;
+    }));
+}
+
 function mapDbSolicitudToUi(array $row): array
 {
     return [

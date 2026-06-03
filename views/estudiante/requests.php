@@ -34,7 +34,7 @@
                                     <?php if (!in_array($request['estado'], ['Aprobada','Rechazada'], true)): ?>
                                         <a href="index.php?controller=Solicitud&action=index&panel=student_requests&reply_request_id=<?php echo $request['id']; ?>" class="rounded-full bg-slate-900 px-4 py-2 text-white text-sm hover:bg-slate-800 transition">Responder</a>
                                     <?php else: ?>
-                                        <span class="inline-flex rounded-full bg-emerald-100 px-3 py-2 text-emerald-700 text-sm">Ver</span>
+                                        <a href="index.php?controller=Solicitud&action=index&panel=student_requests&view_request_id=<?php echo $request['id']; ?>" class="inline-flex rounded-full bg-emerald-100 px-3 py-2 text-emerald-700 text-sm hover:bg-emerald-200 transition">Ver</a>
                                     <?php endif; ?>
                                 </td>
                             </tr>
@@ -44,16 +44,47 @@
             </div>
         <?php endif; ?>
 
+        <?php if (!empty($viewRequest)): ?>
+            <article class="mt-8 rounded-3xl bg-white p-6 shadow-xl border border-slate-200">
+                <h3 class="text-xl font-semibold text-slate-900">Solicitud #<?php echo htmlspecialchars($viewRequest['id']); ?></h3>
+                <div class="mt-4 grid gap-6 md:grid-cols-2 text-slate-700">
+                    <div class="rounded-3xl bg-slate-50 p-6 border border-slate-200">
+                        <h4 class="text-lg font-semibold text-slate-900">Información</h4>
+                        <dl class="mt-4 space-y-3 text-slate-600">
+                            <div><dt class="font-semibold text-slate-900">Tipo</dt><dd><?php echo htmlspecialchars(getLabel($requestTypes, $viewRequest['tipo_solicitud_id'])); ?></dd></div>
+                            <div><dt class="font-semibold text-slate-900">Estado</dt><dd><?php echo htmlspecialchars($viewRequest['estado']); ?></dd></div>
+                            <div><dt class="font-semibold text-slate-900">Fecha</dt><dd><?php echo htmlspecialchars(formatDate($viewRequest['fecha'])); ?></dd></div>
+                            <div><dt class="font-semibold text-slate-900">Documento</dt><dd><?php echo $viewRequest['documento'] ? '<a href="uploads/' . htmlspecialchars(rawurlencode($viewRequest['documento'])) . '" class="text-slate-900 underline" target="_blank">Ver archivo</a>' : 'No aplica'; ?></dd></div>
+                        </dl>
+                    </div>
+                    <div class="rounded-3xl bg-slate-50 p-6 border border-slate-200">
+                        <h4 class="text-lg font-semibold text-slate-900">Detalles</h4>
+                        <dl class="mt-4 space-y-3 text-slate-600">
+                            <div><dt class="font-semibold text-slate-900">Descripción</dt><dd><?php echo nl2br(htmlspecialchars($viewRequest['descripcion'])); ?></dd></div>
+                            <div><dt class="font-semibold text-slate-900">Observación</dt><dd><?php echo nl2br(htmlspecialchars($viewRequest['observacion'] ?? 'Sin observación')); ?></dd></div>
+                        </dl>
+                    </div>
+                </div>
+            </article>
+        <?php endif; ?>
+
         <?php if (!empty($replyRequest)): ?>
             <article class="mt-8 rounded-3xl bg-white p-6 shadow-xl border border-slate-200">
                 <h3 class="text-xl font-semibold text-slate-900">Responder solicitud #<?php echo htmlspecialchars($replyRequest['id']); ?></h3>
-                <form method="post" action="index.php?controller=Solicitud&action=index" class="mt-6 space-y-4">
+                <form method="post" action="index.php?controller=Solicitud&action=index" enctype="multipart/form-data" class="mt-6 space-y-4">
                     <input type="hidden" name="action" value="submit_student_reply">
                     <input type="hidden" name="request_id" value="<?php echo htmlspecialchars($replyRequest['id']); ?>">
                     <label class="block">
                         <span class="text-sm font-semibold text-slate-700">Respuesta</span>
                         <textarea name="student_response" rows="4" class="mt-2 w-full rounded-3xl border border-slate-300 bg-white px-4 py-3" required></textarea>
                     </label>
+                    <?php if ($replyRequest['estado'] === 'Falta información'): ?>
+                        <label class="block">
+                            <span class="text-sm font-semibold text-slate-700">Documento adicional</span>
+                            <input type="file" name="response_document" class="mt-2 w-full rounded-3xl border border-slate-300 bg-white px-4 py-3" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" />
+                            <p class="mt-2 text-sm text-slate-500">Puedes adjuntar un archivo si necesitas corregir la solicitud.</p>
+                        </label>
+                    <?php endif; ?>
                     <button type="submit" class="rounded-2xl bg-slate-900 px-5 py-3 text-white font-semibold hover:bg-slate-800 transition">Enviar respuesta</button>
                 </form>
             </article>
