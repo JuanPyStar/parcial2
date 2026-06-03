@@ -6,6 +6,7 @@
             <a href="index.php?controller=Solicitud&action=index&panel=admin_requests" class="block rounded-2xl px-4 py-3 text-slate-900 hover:bg-slate-100 transition <?php echo $selectedPanel === 'admin_requests' ? 'bg-slate-100 font-semibold' : ''; ?>">Solicitudes pendientes</a>
             <a href="index.php?controller=Solicitud&action=index&panel=admin_reports" class="block rounded-2xl px-4 py-3 text-slate-900 hover:bg-slate-100 transition <?php echo $selectedPanel === 'admin_reports' ? 'bg-slate-100 font-semibold' : ''; ?>">Historial</a>
             <a href="index.php?controller=Solicitud&action=index&panel=profile" class="block rounded-2xl px-4 py-3 text-slate-900 hover:bg-slate-100 transition <?php echo $selectedPanel === 'profile' ? 'bg-slate-100 font-semibold' : ''; ?>">Perfil</a>
+            <a href="index.php?controller=Auth&action=register" class="block rounded-2xl px-4 py-3 text-slate-900 hover:bg-slate-100 transition <?php echo $selectedPanel === 'register' ? 'bg-slate-100 font-semibold' : ''; ?>">Crear cuenta</a>
             <a href="index.php?controller=Solicitud&action=index&panel=help" class="block rounded-2xl px-4 py-3 text-slate-900 hover:bg-slate-100 transition <?php echo $selectedPanel === 'help' ? 'bg-slate-100 font-semibold' : ''; ?>">Ayuda</a>
         </nav>
         <form method="post" action="index.php?controller=Auth" class="mt-8">

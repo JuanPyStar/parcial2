@@ -243,11 +243,15 @@ class SolicitudController extends BaseController
                     elseif (!in_array($file['type'], $allowedTypes)) $errors[] = 'Tipo de archivo no permitido.';
                     elseif ($file['size'] > $maxSize) $errors[] = 'El archivo es demasiado grande.';
                     else {
-                        $uploadDir = __DIR__ . '/../public/uploads/';
+                        $uploadDir = __DIR__ . '/../uploads/';
                         if (!is_dir($uploadDir)) mkdir($uploadDir, 0755, true);
                         $fileName = uniqid() . '_' . basename($file['name']);
                         $filePath = $uploadDir . $fileName;
-                        if (move_uploaded_file($file['tmp_name'], $filePath)) $uploadedFile = $fileName; else $errors[] = 'Error al guardar el archivo.';
+                        if (move_uploaded_file($file['tmp_name'], $filePath)) {
+                            $uploadedFile = $fileName;
+                        } else {
+                            $errors[] = 'Error al guardar el archivo.';
+                        }
                     }
                 }
 
@@ -310,7 +314,7 @@ class SolicitudController extends BaseController
                     } elseif ($file['size'] > $maxSize) {
                         $errors[] = 'El archivo es demasiado grande.';
                     } else {
-                        $uploadDir = __DIR__ . '/../public/uploads/';
+                        $uploadDir = __DIR__ . '/../uploads/';
                         if (!is_dir($uploadDir)) mkdir($uploadDir, 0755, true);
                         $fileName = uniqid() . '_' . basename($file['name']);
                         $filePath = $uploadDir . $fileName;

@@ -64,6 +64,20 @@
         <?php if (!empty($respondRequest)): ?>
             <article class="mt-8 rounded-3xl bg-white p-6 shadow-xl border border-slate-200">
                 <h3 class="text-xl font-semibold text-slate-900">Responder solicitud #<?php echo htmlspecialchars($respondRequest['id']); ?></h3>
+                <div class="mt-6 grid gap-6 lg:grid-cols-2">
+                    <div class="rounded-3xl bg-slate-50 p-5 border border-slate-200">
+                        <p class="text-sm font-semibold text-slate-700">Descripción de la solicitud</p>
+                        <p class="mt-3 text-slate-600 whitespace-pre-line"><?php echo nl2br(htmlspecialchars($respondRequest['descripcion'] ?? 'Sin descripción')); ?></p>
+                    </div>
+                    <div class="rounded-3xl bg-slate-50 p-5 border border-slate-200">
+                        <p class="text-sm font-semibold text-slate-700">Documento adjunto</p>
+                        <?php if (!empty($respondRequest['documento'])): ?>
+                            <p class="mt-3 text-slate-600"><a href="uploads/<?php echo htmlspecialchars(rawurlencode($respondRequest['documento'])); ?>" target="_blank" class="text-slate-900 underline">Ver archivo adjunto</a></p>
+                        <?php else: ?>
+                            <p class="mt-3 text-slate-600">No hay archivo adjunto.</p>
+                        <?php endif; ?>
+                    </div>
+                </div>
                 <form method="post" action="index.php?controller=Solicitud&action=index" class="mt-6 space-y-4">
                     <input type="hidden" name="action" value="submit_response">
                     <input type="hidden" name="request_id" value="<?php echo htmlspecialchars($respondRequest['id']); ?>">

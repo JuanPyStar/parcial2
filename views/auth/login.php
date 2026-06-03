@@ -38,9 +38,7 @@
                             Entrar
                         </button>
 
-                        <a href="index.php?controller=Auth&action=register" class="block text-center w-full rounded-2xl border border-slate-300 bg-white px-5 py-3 text-slate-900 font-semibold shadow hover:bg-slate-50 transition">
-                            Crear cuenta
-                        </a>
+                        <!-- Registro movido al panel de administrador -->
                     </form>
                 </div>
             </div>

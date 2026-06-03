@@ -11,19 +11,27 @@ class AuthController extends BaseController
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
+        $currentRole = $_SESSION['user_role'] ?? null;
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $task = $_POST['action'] ?? '';
             if ($task === 'login') {
                 $this->login($_POST);
                 return;
             }
-            if ($task === 'register_student') {
-                $this->registerStudent($_POST);
-                return;
-            }
-            if ($task === 'register_admin') {
-                $this->registerAdmin($_POST);
-                return;
+            if (in_array($task, ['register_student','register_admin'], true)) {
+                // Only allow registration actions for authenticated admins
+                if ($currentRole !== 'admin') {
+                    $this->render('auth/login', ['errors' => ['No autorizado.'], 'old' => []]);
+                    return;
+                }
+                if ($task === 'register_student') {
+                    $this->registerStudent($_POST);
+                    return;
+                }
+                if ($task === 'register_admin') {
+                    $this->registerAdmin($_POST);
+                    return;
+                }
             }
             if ($task === 'logout') {
                 $this->logout();
@@ -32,7 +40,12 @@ class AuthController extends BaseController
         }
 
         if ($action === 'register') {
-            $this->render('auth/register', ['errors' => [], 'old' => []]);
+            // Only admins can access the register page
+            if ($currentRole !== 'admin') {
+                $this->redirect('index.php?controller=Auth&action=login');
+                return;
+            }
+            $this->render('auth/register', ['errors' => [], 'old' => [], 'selectedPanel' => 'register']);
             return;
         }
 
