@@ -50,6 +50,7 @@
                                     <a href="index.php?controller=Solicitud&action=index&panel=admin_requests&respond=<?php echo htmlspecialchars($request['id']); ?>" class="rounded-full bg-slate-900 px-4 py-2 text-white text-sm hover:bg-slate-800 transition">Responder</a>
                                     <form method="post" action="index.php?controller=Solicitud&action=index" class="inline-block">
                                         <input type="hidden" name="action" value="delete_request">
+                                        <input type="hidden" name="panel" value="admin_requests">
                                         <input type="hidden" name="request_id" value="<?php echo htmlspecialchars($request['id']); ?>">
                                         <button type="submit" class="rounded-full bg-rose-100 px-4 py-2 text-rose-700 text-sm hover:bg-rose-200 transition">Eliminar</button>
                                     </form>
@@ -80,6 +81,7 @@
                 </div>
                 <form method="post" action="index.php?controller=Solicitud&action=index" class="mt-6 space-y-4">
                     <input type="hidden" name="action" value="submit_response">
+                    <input type="hidden" name="panel" value="admin_requests">
                     <input type="hidden" name="request_id" value="<?php echo htmlspecialchars($respondRequest['id']); ?>">
                     <label class="block">
                         <span class="text-sm font-semibold text-slate-700">Estado</span>

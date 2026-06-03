@@ -44,7 +44,19 @@
                             </label>
                             <label class="block">
                                 <span class="text-sm font-semibold text-slate-700">Programa</span>
-                                <input type="text" name="programa" value="<?php echo htmlspecialchars($old['programa'] ?? ''); ?>" class="mt-2 w-full rounded-3xl border border-slate-300 bg-white px-4 py-3" required>
+                                <select name="programa" class="mt-2 w-full rounded-3xl border border-slate-300 bg-white px-4 py-3" required>
+                                    <option value="">Selecciona un programa</option>
+                                    <?php $programOptions = [
+                                        'Ingeniería de Software',
+                                        'Diseño Gráfico',
+                                        'Negocios Internacionales',
+                                        'Diseño de Modas',
+                                        'Financiera',
+                                    ]; ?>
+                                    <?php foreach ($programOptions as $programOption): ?>
+                                        <option value="<?php echo htmlspecialchars($programOption); ?>" <?php echo ($old['programa'] ?? '') === $programOption ? 'selected' : ''; ?>><?php echo htmlspecialchars($programOption); ?></option>
+                                    <?php endforeach; ?>
+                                </select>
                             </label>
                             <label class="block">
                                 <span class="text-sm font-semibold text-slate-700">Semestre</span>

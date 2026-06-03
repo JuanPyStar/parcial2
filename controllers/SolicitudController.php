@@ -84,21 +84,11 @@ class SolicitudController extends BaseController
                 $requestTypes[(int)$tipo['id_tipo_solicitud']] = $tipo['nombre_tipo'];
             }
             if (count($requestTypes) < 13) {
-                $requestTypes = [
-                    1 => 'Cancelación de semestre',
-                    2 => 'Curso dirigido',
-                    3 => 'Cancelación de asignaturas',
-                    4 => 'Cambio de jornada',
-                    5 => 'Transferencia interna',
-                    6 => 'Examen de validación por suficiencia',
-                    7 => 'Reingreso',
-                    8 => 'Matrícula mínima de créditos',
-                    9 => 'Traslado de sede',
-                    10 => 'Pago de créditos adicionales',
-                    11 => 'Constancia de estudio',
-                    12 => 'Certificado de notas',
-                    13 => 'Otra',
-                ];
+                $tipoSolicitudModel->ensureDefaultTypes();
+                $requestTypes = [];
+                foreach ($tipoSolicitudModel->listar() as $tipo) {
+                    $requestTypes[(int)$tipo['id_tipo_solicitud']] = $tipo['nombre_tipo'];
+                }
             }
         } catch (Throwable $e) {
             $requestTypes = [
@@ -227,6 +217,9 @@ class SolicitudController extends BaseController
                 $shiftId = intval($_POST['shift'] ?? 0);
                 $description = trim($_POST['description'] ?? '');
 
+                if (empty($currentUserId) || (int)$currentUserId <= 0) {
+                    $errors[] = 'No se pudo identificar tu usuario. Inicia sesión de nuevo.';
+                }
                 if ($requestTypeId <= 0) $errors[] = 'Selecciona un tipo de solicitud válido.';
                 if ($programId <= 0) $errors[] = 'Selecciona un programa válido.';
                 if ($campusId <= 0) $errors[] = 'Selecciona una sede válida.';
@@ -262,7 +255,8 @@ class SolicitudController extends BaseController
                         $row = $model->buscarPorId((int)$newId);
                         $newRequest = $row ? mapDbSolicitudToUi($row) : ['id'=>$newId,'fecha'=>date('Y-m-d'),'estado'=>'Pendiente','tipo_solicitud_id'=>$requestTypeId,'descripcion'=>$description,'estudiante_id'=>(int)$currentUserId,'programa_id'=>$programId,'sede_id'=>$campusId,'jornada_id'=>$shiftId,'observacion'=>'','admin_id'=>null,'respuesta_fecha'=>'','documento'=>$uploadedFile];
                         $result = ['type'=>'student_request','message'=>'Tu solicitud ha sido registrada correctamente.','request'=>$newRequest];
-                        // refresh lists
+                        // refresh lists and show the user's historial
+                        $panel = 'student_requests';
                         $rows = (new SolicitudModel())->listarPorEstudiante((int)$currentUserId);
                         $studentRequests = array_map('mapDbSolicitudToUi',$rows);
                     } catch (Throwable $e) {
@@ -374,6 +368,24 @@ class SolicitudController extends BaseController
             }
         }
 
+        // Preserve the active panel after form submission
+        $panel = (string)($_REQUEST['panel'] ?? 'dashboard');
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $panel = (string)($_POST['panel'] ?? $panel);
+            if ($actionPost === 'submit_request' && empty($errors)) {
+                $panel = 'student_requests';
+            } elseif ($panel === '') {
+                $actionPost = $_POST['action'] ?? '';
+                if ($actionPost === 'submit_request') {
+                    $panel = 'new_request';
+                } elseif ($actionPost === 'submit_student_reply') {
+                    $panel = 'student_requests';
+                } elseif (in_array($actionPost, ['submit_response', 'delete_request', 'update_request'], true)) {
+                    $panel = 'admin_requests';
+                }
+            }
+        }
+
         // Counts
         $pendingCount = 0; $respondedCount = 0;
         foreach ($allRequests as $request) {
@@ -384,7 +396,6 @@ class SolicitudController extends BaseController
             }
         }
 
-        $panel = (string)($_REQUEST['panel'] ?? 'dashboard');
         if ($currentUserRole === null) {
             $this->redirect('index.php?controller=Auth&action=login');
             return;

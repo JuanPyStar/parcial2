@@ -31,10 +31,13 @@
                                 <td class="px-6 py-4"><?php echo htmlspecialchars($request['estado']); ?></td>
                                 <td class="px-6 py-4"><?php echo htmlspecialchars(formatDate($request['fecha'])); ?></td>
                                 <td class="px-6 py-4 space-x-2">
-                                    <?php if (!in_array($request['estado'], ['Aprobada','Rechazada'], true)): ?>
-                                        <a href="index.php?controller=Solicitud&action=index&panel=student_requests&reply_request_id=<?php echo $request['id']; ?>" class="rounded-full bg-slate-900 px-4 py-2 text-white text-sm hover:bg-slate-800 transition">Responder</a>
-                                    <?php else: ?>
+                                    <?php $canView = !empty($request['observacion']) || !in_array($request['estado'], ['Pendiente'], true); ?>
+                                    <?php $canReply = in_array($request['estado'], ['Falta información','En espera'], true); ?>
+                                    <?php if ($canView): ?>
                                         <a href="index.php?controller=Solicitud&action=index&panel=student_requests&view_request_id=<?php echo $request['id']; ?>" class="inline-flex rounded-full bg-emerald-100 px-3 py-2 text-emerald-700 text-sm hover:bg-emerald-200 transition">Ver</a>
+                                    <?php endif; ?>
+                                    <?php if ($canReply): ?>
+                                        <a href="index.php?controller=Solicitud&action=index&panel=student_requests&reply_request_id=<?php echo $request['id']; ?>" class="rounded-full bg-slate-900 px-4 py-2 text-white text-sm hover:bg-slate-800 transition">Responder</a>
                                     <?php endif; ?>
                                 </td>
                             </tr>
@@ -73,6 +76,7 @@
                 <h3 class="text-xl font-semibold text-slate-900">Responder solicitud #<?php echo htmlspecialchars($replyRequest['id']); ?></h3>
                 <form method="post" action="index.php?controller=Solicitud&action=index" enctype="multipart/form-data" class="mt-6 space-y-4">
                     <input type="hidden" name="action" value="submit_student_reply">
+                    <input type="hidden" name="panel" value="student_requests">
                     <input type="hidden" name="request_id" value="<?php echo htmlspecialchars($replyRequest['id']); ?>">
                     <label class="block">
                         <span class="text-sm font-semibold text-slate-700">Respuesta</span>

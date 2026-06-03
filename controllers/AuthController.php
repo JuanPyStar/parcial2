@@ -134,14 +134,24 @@ class AuthController extends BaseController
         $documento = trim((string)($input['documento'] ?? ''));
         $correo = trim((string)($input['correo'] ?? ''));
         $telefono = trim((string)($input['telefono'] ?? ''));
-        $programaId = (int)($input['programa_id'] ?? 0);
+        $programa = trim((string)($input['programa'] ?? ''));
         $semestre = (int)($input['semestre'] ?? 0);
         $password = (string)($input['password'] ?? '');
         $password2 = (string)($input['password2'] ?? '');
 
+        $allowedPrograms = [
+            'Ingeniería de Software',
+            'Diseño Gráfico',
+            'Negocios Internacionales',
+            'Diseño de Modas',
+            'Financiera',
+        ];
+
         if ($nombre === '' || $apellido === '') $errors[] = 'Ingresa nombre y apellido.';
         if ($documento === '') $errors[] = 'Ingresa tu documento.';
         if ($correo === '' || !filter_var($correo, FILTER_VALIDATE_EMAIL)) $errors[] = 'Ingresa un correo válido.';
+        if ($programa === '' || !in_array($programa, $allowedPrograms, true)) $errors[] = 'Selecciona un programa válido.';
+        if ($semestre <= 0) $errors[] = 'Ingresa un semestre válido.';
         if ($password === '' || strlen($password) < 6) $errors[] = 'La contraseña debe tener mínimo 6 caracteres.';
         if ($password !== $password2) $errors[] = 'Las contraseñas no coinciden.';
 
